@@ -6,7 +6,7 @@ import config from '../config/index';
 import Organization from "./organization/Organization";
 import OrganizationService from "./organization/OrganizationService";
 import CommentService from "./comment/CommentService";
-import CommentController from "./comment/CommentController";
+import OrganizationController from "./OrganizationController";
 import Comment from "./comment/Comment";
 
 const app = express();
@@ -28,7 +28,7 @@ const createServices = models => {
 }
 
 const createControllers = () => [
-    new CommentController(app)
+    new OrganizationController(app)
 ];
 
 const initializeControllers = () => {

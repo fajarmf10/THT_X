@@ -1,8 +1,8 @@
 import express from "express";
-import errorHandler from "../middleware/errorHandler";
-import UnknownRoutes from "../exception/UnknownRoutes";
+import errorHandler from "./middleware/errorHandler";
+import UnknownRoutes from "./exception/UnknownRoutes";
 
-export default class CommentController {
+export default class OrganizationController {
     constructor(app) {
         this._app = app;
         this._router = express.Router();
