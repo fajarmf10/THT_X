@@ -1,0 +1,41 @@
+{
+  "name": "organizations_api",
+  "version": "1.0.0",
+  "description": "Simple API for Organizations",
+  "scripts": {
+    "test": "jest --coverage --runInBand --forceExit",
+    "start": "babel-node index.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/runtime": "^7.7.2",
+    "husky": "^3.0.9",
+    "jest": "^27.3.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run test -- --passWithNoTests"
+    }
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "http-error": "0.0.6",
+    "http-errors": "^1.8.0",
+    "http-status-codes": "^1.4.0",
+    "joi": "^17.4.2",
+    "mockdate": "^2.0.5",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "readline-sync": "^1.4.10",
+    "sequelize": "^6.7.0",
+    "supertest": "^6.1.6"
+  },
+  "author": "fajarmf",
+  "license": "ISC"
+}
