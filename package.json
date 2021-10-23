@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Simple API for Organizations",
   "scripts": {
-    "test": "jest --coverage --runInBand --forceExit",
+    "test": "jest --coverage --runInBand --detectOpenHandles --forceExit",
     "start": "babel-node index.js",
     "start-dev": "nodemon --exec npm run start index.js"
   },
