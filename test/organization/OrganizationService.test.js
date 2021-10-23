@@ -1,4 +1,5 @@
 import OrganizationService from "../../src/organization/OrganizationService";
+import OrganizationNotFound from "../../src/exception/OrganizationNotFound";
 
 describe('OrganizationService', () => {
     const organizationId = 'xendit';
@@ -31,6 +32,14 @@ describe('OrganizationService', () => {
             let actualResult = await serviceUnderTest.findOrganization('xendit');
 
             expect(actualResult).toMatchObject(expectedResult);
+        });
+
+        it('should throw OrganizationNotFound error when record is not found', async () => {
+            models.Organization.getOrganizationById.mockResolvedValue(null);
+
+            let methodInvocation = () => serviceUnderTest.findOrganization('google');
+
+            await expect(methodInvocation()).rejects.toEqual(new OrganizationNotFound());
         });
     });
 });
