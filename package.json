@@ -4,7 +4,8 @@
   "description": "Simple API for Organizations",
   "scripts": {
     "test": "jest --coverage --runInBand --forceExit",
-    "start": "babel-node index.js"
+    "start": "babel-node index.js",
+    "start-dev": "nodemon --exec npm run start index.js"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
@@ -30,6 +31,7 @@
     "http-status-codes": "^1.4.0",
     "joi": "^17.4.2",
     "mockdate": "^2.0.5",
+    "nodemon": "^2.0.14",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
     "readline-sync": "^1.4.10",
