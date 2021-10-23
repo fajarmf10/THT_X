@@ -1,7 +1,9 @@
-import database from "../src/Database";
+import request from 'supertest';
 import {DataTypes} from "sequelize";
+import database from "../src/Database";
 import Comment from "../src/comment/Comment";
 import Organization from "../src/organization/Organization";
+import app from '../src/app';
 
 describe('# Application Test', () => {
     let databaseConnection;
@@ -9,7 +11,7 @@ describe('# Application Test', () => {
         applicationPort: 8012,
         applicationName: 'Organizations-API',
         db: {
-            name: 'postgres',
+            name: 'organizations',
             username: 'postgres',
             password: 'halosemua',
             host: '127.0.0.1',
@@ -38,6 +40,12 @@ describe('# Application Test', () => {
         commentModel = Comment.init(databaseConnection);
         organizationModel.associate({Organization: organizationModel, Comment: commentModel})
         commentModel.associate({Organization: organizationModel, Comment: commentModel})
+
+        await initializeTables();
+    })
+
+    afterAll(async () => {
+        await dropTables();
     })
 
     async function dropTables() {
@@ -133,14 +141,18 @@ describe('# Application Test', () => {
         await xendit.createComment(anotherComment);
     }
 
+    async function truncateTables() {
+        await organizationModel.destroy({truncate: true, cascade:true});
+        await commentModel.destroy({truncate: true, cascade:true});
+    }
+
     describe('## Model', () => {
         beforeEach(async () => {
-            await initializeTables();
             await seedSomeOrganizations();
             await seedSomeComments();
         })
         afterEach(async () => {
-            await dropTables();
+            await truncateTables();
         })
 
         describe('### Organization', () => {
@@ -177,6 +189,57 @@ describe('# Application Test', () => {
                 const actualResult = await commentModel.getAllVisibleCommentsByOrganization(xenditId);
 
                 expect(actualResult.length).toEqual(2);
+            });
+        })
+    });
+
+    describe('## Controller', () => {
+        beforeEach(async () => {
+            await seedSomeOrganizations();
+        })
+        afterEach(async () => {
+            await truncateTables();
+        })
+
+        describe('/comments', () => {
+            it('#GET it should return 404 Organization not found! when organization is not registered', async () => {
+                const response = await request(app)
+                    .get('/orgs/abcdef/comments')
+                    .expect(404);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.message).toEqual("Organization not found!");
+            });
+
+            it('#GET it should return all comments for Xendit', async () => {
+                await seedSomeComments();
+
+                const response = await request(app)
+                    .get('/orgs/xendit/comments')
+                    .expect(200);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.length).toEqual(2);
+            });
+
+            it('#GET it should return empty comments for Google', async () => {
+                await seedSomeComments();
+
+                const response = await request(app)
+                    .get('/orgs/google/comments')
+                    .expect(200);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.length).toEqual(0);
             });
         })
     });
