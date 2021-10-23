@@ -1,4 +1,5 @@
 import express from "express";
+import errorHandler from "../middleware/errorHandler";
 
 export default class CommentController {
     constructor(app) {
@@ -10,7 +11,7 @@ export default class CommentController {
     attachRoutes() {
         this._app.use('/orgs', this._router);
 
-        this._router.post('/:orgsId/comments', this._postComment);
+        this._router.post('/:orgsId/comments', errorHandler(this._postComment));
     }
 
     async _postComment(request, response) {
@@ -18,6 +19,6 @@ export default class CommentController {
         const {orgsId} = request.params;
         const {body: requestBody} = request;
         const result = await commentService.postComment(requestBody, orgsId);
-        return response.json(result);
+        return response.status(200).json(result);
     }
 }

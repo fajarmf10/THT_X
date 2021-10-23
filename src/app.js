@@ -47,4 +47,15 @@ registerDependencies();
 app.use(bodyParser.json());
 initializeControllers();
 
+app.use((error, request, response, _) => {
+    const errorObject = {
+        statusCode: error.statusCode,
+        message: error.message
+    };
+    const {url, method} = request;
+    const loggingObject = {...errorObject, endpoint: url, method}
+    console.log(loggingObject);
+    return response.status(error.statusCode).json(errorObject);
+});
+
 export default app;

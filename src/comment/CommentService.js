@@ -9,7 +9,6 @@ export default class CommentService {
         try {
             await this._organizationService.findOrganization(organizationId);
         } catch (error) {
-            console.log(`Organization with id ${organizationId} not found!`);
             throw error;
         }
         return await Comment.createComment(commentDetail, organizationId);
