@@ -38,6 +38,11 @@ const initializeControllers = () => {
     });
 };
 
+const initializeAssociation = (models) => {
+    models.Organization.associate(models);
+    models.Comment.associate(models);
+};
+
 const registerDependencies = () => {
     app.locals.models = createModels();
     app.locals.services = createServices(app.locals.models);
@@ -46,6 +51,7 @@ const registerDependencies = () => {
 registerDependencies();
 app.use(bodyParser.json());
 initializeControllers();
+initializeAssociation(app.locals.models);
 
 app.use((error, request, response, _) => {
     const errorObject = {

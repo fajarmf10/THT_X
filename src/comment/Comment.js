@@ -42,6 +42,11 @@ class Comment extends Model {
         })
     }
 
+    static associate(models) {
+        const { Comment: CommentModel, Organization: OrganizationModel} = models;
+        CommentModel.belongsTo(OrganizationModel, { foreignKey: 'organizationId' });
+    }
+
     static async createComment(commentDetail, organizationId) {
         const {comment} = commentDetail;
         const isDeleted = false;
