@@ -9,7 +9,6 @@ export default class OrganizationService {
         const { Organization } = this._models;
         let result = await Organization.getOrganizationById(organizationId);
         if (result === null) {
-            console.log(`Organization with id ${organizationId} not found!`);
             throw new OrganizationNotFound();
         }
         return result;

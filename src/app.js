@@ -5,18 +5,26 @@ import database from './Database';
 import config from '../config/index';
 import Organization from "./organization/Organization";
 import OrganizationService from "./organization/OrganizationService";
+import CommentService from "./comment/CommentService";
+import Comment from "./comment/Comment";
 
 const app = express();
 app.use(cors());
 const databaseConnection = database.connect(config.db);
 
 const createModels = () => ({
-    Organization: Organization.init(databaseConnection)
+    Organization: Organization.init(databaseConnection),
+    Comment: Comment.init(databaseConnection)
 });
 
-const createServices = models => ({
-    organizationService: new OrganizationService(models)
-});
+const createServices = models => {
+    const organizationService = new OrganizationService(models);
+    const commentService = new CommentService(organizationService, models);
+    return {
+        organizationService,
+        commentService
+    };
+}
 
 const registerDependencies = () => {
     app.locals.models = createModels();
