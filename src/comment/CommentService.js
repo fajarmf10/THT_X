@@ -4,17 +4,27 @@ export default class CommentService {
         this._organizationService = organizationService;
     }
 
-    async checkOrganization(organizationId) {
+    async _getOrganization(organizationId) {
         try {
-            await this._organizationService.findOrganization(organizationId);
+            return await this._organizationService.findOrganization(organizationId);
         } catch (error) {
             throw error;
         }
     }
 
     async postComment(commentDetail, organizationId) {
-        const { Comment } = this._models;
-        await this.checkOrganization(organizationId);
-        return await Comment.createComment(commentDetail, organizationId);
+        const {comment} = commentDetail;
+        const organization = await this._getOrganization(organizationId);
+        const isDeleted = false;
+        const newComment = {
+            comment,
+            isDeleted
+        }
+        return organization.createComment(newComment);
+    }
+
+    async getAllCommentsForOrganization(organizationId) {
+        const organization = await this._getOrganization(organizationId);
+        return await organization.getComments();
     }
 }

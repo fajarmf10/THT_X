@@ -12,6 +12,7 @@ import Comment from "./comment/Comment";
 const app = express();
 app.use(cors());
 const databaseConnection = database.connect(config.db);
+databaseConnection.sync();
 
 const createModels = () => ({
     Organization: Organization.init(databaseConnection),
