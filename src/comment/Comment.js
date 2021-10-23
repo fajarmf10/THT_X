@@ -1,4 +1,5 @@
 import {DataTypes, Model} from "sequelize";
+import Organization from "../organization/Organization";
 
 class Comment extends Model {
     static init(sequelize) {
@@ -44,7 +45,20 @@ class Comment extends Model {
 
     static associate(models) {
         const { Comment: CommentModel, Organization: OrganizationModel} = models;
-        CommentModel.belongsTo(OrganizationModel, { foreignKey: 'organizationId' });
+        CommentModel.belongsTo(OrganizationModel, { targetKey: 'id' });
+    }
+
+    static async updateAll(organization) {
+        const isDeleted = true;
+        return await Comment.update(
+            {isDeleted},
+            {
+                where: {
+                    organizationId: organization.id,
+                    isDeleted: false
+                }
+            }
+        )
     }
 }
 

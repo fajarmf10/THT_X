@@ -6,7 +6,7 @@ import config from '../config/index';
 import Organization from "./organization/Organization";
 import OrganizationService from "./organization/OrganizationService";
 import CommentService from "./comment/CommentService";
-import OrganizationController from "./OrganizationController";
+import OrganizationController from "./organization/OrganizationController";
 import Comment from "./comment/Comment";
 
 const app = express();

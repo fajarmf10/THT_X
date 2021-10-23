@@ -43,7 +43,9 @@ describe('CommentService', () => {
             findOrganization: jest.fn()
         }
         models = {
-            Comment: {}
+            Comment: {
+                updateAll: jest.fn()
+            }
         }
         classUnderTest = new CommentService(organizationService, models);
     });
@@ -116,6 +118,33 @@ describe('CommentService', () => {
             expect(actualResult.length).toEqual(0);
             expect(actualResult).toMatchObject([]);
             expect(xenditOrg.getComments).toHaveBeenCalledTimes(1);
+        });
+    })
+
+    describe('deleteAllCommentsForOrganization', () => {
+        it('should return total amount of deleted comments when comments are found by organization', async () => {
+            organizationService.findOrganization.mockResolvedValue(xenditOrg);
+            models.Comment.updateAll.mockResolvedValue(commentsOnXendit.length);
+
+            const actualResult = await classUnderTest.deleteAllCommentsForOrganization('xendit');
+
+            expect(actualResult).not.toBeNull();
+            expect(actualResult).not.toBeUndefined();
+            expect(models.Comment.updateAll).toHaveBeenCalledTimes(1);
+            expect(models.Comment.updateAll).toHaveBeenCalledWith(xenditOrg);
+        });
+
+        it('should throw OrganizationNotFound when organization is not found', async () => {
+            const organizationNotFound = new OrganizationNotFound();
+            organizationService.findOrganization.mockRejectedValue(organizationNotFound);
+
+            const invocationMethod = () => classUnderTest.deleteAllCommentsForOrganization('lestari');
+
+            await expect(invocationMethod).rejects
+                .toThrow(organizationNotFound);
+            expect(organizationService.findOrganization).toHaveBeenCalledTimes(1);
+            expect(organizationService.findOrganization).toHaveBeenCalledWith('lestari');
+            expect(organizationService.findOrganization).not.toHaveBeenCalledWith('xendit');
         });
     })
 })
