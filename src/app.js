@@ -6,6 +6,7 @@ import config from '../config/index';
 import Organization from "./organization/Organization";
 import OrganizationService from "./organization/OrganizationService";
 import CommentService from "./comment/CommentService";
+import CommentController from "./comment/CommentController";
 import Comment from "./comment/Comment";
 
 const app = express();
@@ -26,6 +27,17 @@ const createServices = models => {
     };
 }
 
+const createControllers = () => [
+    new CommentController(app)
+];
+
+const initializeControllers = () => {
+    const controllers = createControllers();
+    controllers.forEach((controller) => {
+        controller.attachRoutes();
+    });
+};
+
 const registerDependencies = () => {
     app.locals.models = createModels();
     app.locals.services = createServices(app.locals.models);
@@ -33,5 +45,6 @@ const registerDependencies = () => {
 
 registerDependencies();
 app.use(bodyParser.json());
+initializeControllers();
 
 export default app;
