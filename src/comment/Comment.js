@@ -60,6 +60,15 @@ class Comment extends Model {
             }
         )
     }
+
+    static async getAllVisibleCommentsByOrganization(organization) {
+        return await Comment.findAll({
+            where: {
+                organizationId: organization.id,
+                isDeleted: false
+            }
+        })
+    }
 }
 
 export default Comment;

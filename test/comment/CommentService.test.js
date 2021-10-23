@@ -44,7 +44,8 @@ describe('CommentService', () => {
         }
         models = {
             Comment: {
-                updateAll: jest.fn()
+                updateAll: jest.fn(),
+                getAllVisibleCommentsByOrganization: jest.fn()
             }
         }
         classUnderTest = new CommentService(organizationService, models);
@@ -96,7 +97,7 @@ describe('CommentService', () => {
 
         it('should return list of comments by organization ID', async () => {
             organizationService.findOrganization.mockResolvedValue(xenditOrg);
-            xenditOrg.getComments.mockResolvedValue(commentsOnXendit);
+            models.Comment.getAllVisibleCommentsByOrganization.mockResolvedValue(commentsOnXendit);
 
             const actualResult = await classUnderTest.getAllCommentsForOrganization('xendit');
 
@@ -104,12 +105,12 @@ describe('CommentService', () => {
             expect(actualResult).not.toBeUndefined();
             expect(actualResult.length).toEqual(2);
             expect(actualResult).toMatchObject(commentsOnXendit);
-            expect(xenditOrg.getComments).toHaveBeenCalledTimes(1);
+            expect(models.Comment.getAllVisibleCommentsByOrganization).toHaveBeenCalledTimes(1);
         });
 
         it('should return empty list of comments if organization doesnt have any comment', async () => {
             organizationService.findOrganization.mockResolvedValue(xenditOrg);
-            xenditOrg.getComments.mockResolvedValue([]);
+            models.Comment.getAllVisibleCommentsByOrganization.mockResolvedValue([]);
 
             const actualResult = await classUnderTest.getAllCommentsForOrganization('lestari');
 
@@ -117,7 +118,7 @@ describe('CommentService', () => {
             expect(actualResult).not.toBeUndefined();
             expect(actualResult.length).toEqual(0);
             expect(actualResult).toMatchObject([]);
-            expect(xenditOrg.getComments).toHaveBeenCalledTimes(1);
+            expect(models.Comment.getAllVisibleCommentsByOrganization).toHaveBeenCalledTimes(1);
         });
     })
 

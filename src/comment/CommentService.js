@@ -25,7 +25,8 @@ export default class CommentService {
 
     async getAllCommentsForOrganization(organizationId) {
         const organization = await this._getOrganization(organizationId);
-        return await organization.getComments();
+        const {Comment} = this._models;
+        return await Comment.getAllVisibleCommentsByOrganization(organization);
     }
 
     async deleteAllCommentsForOrganization(organizationId) {
