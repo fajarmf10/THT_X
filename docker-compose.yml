@@ -1,7 +1,16 @@
 version: '3.1'
 
 services:
-  db:
+  organizations-api:
+    container_name: organizations-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+        - "8123:8012"
+  postgres:
     image: postgres
     restart: always
     ports:

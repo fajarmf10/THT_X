@@ -12,6 +12,7 @@ const connect = (options) => {
         ...otherConfig
     } = options;
 
+    console.log(options);
     if (!sequelize) {
         sequelize = new Sequelize(name, username, password, otherConfig);
     }
