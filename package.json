@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Simple API for Organizations",
   "scripts": {
-    "test": "jest --coverage --runInBand --detectOpenHandles --forceExit",
-    "start": "babel-node index.js",
-    "start-dev": "nodemon --exec npm run start index.js"
+    "test": "NODE_ENV=test jest --coverage --runInBand --detectOpenHandles --forceExit",
+    "start": "NODE_ENV=dev babel-node index.js",
+    "start-dev": "NODE_ENV=dev nodemon --exec npm run start index.js"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
@@ -24,6 +24,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "ejs": "^2.7.4",
     "express": "^4.17.1",
     "http-error": "0.0.6",

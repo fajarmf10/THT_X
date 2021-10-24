@@ -33,4 +33,5 @@ node_modules/
 # OSX
 .DS_Store
 Icon*
-.env
+.env.dev
+.env.test
