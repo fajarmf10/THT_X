@@ -32,8 +32,9 @@ class Organization extends Model {
     }
 
     static associate(models) {
-        const { Comment: CommentModel, Organization: OrganizationModel} = models;
+        const { Comment: CommentModel, Organization: OrganizationModel, Member: MemberModel} = models;
         OrganizationModel.hasMany(CommentModel, { foreignKey: 'organizationId' });
+        OrganizationModel.hasMany(MemberModel, { foreignKey: 'organizationId' });
     }
 
     static getOrganizationById(organizationId){

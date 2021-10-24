@@ -44,6 +44,7 @@ const initializeControllers = () => {
 const initializeAssociation = (models) => {
     models.Organization.associate(models);
     models.Comment.associate(models);
+    models.Member.associate(models);
 };
 
 const registerDependencies = () => {

@@ -20,12 +20,13 @@ CREATE TABLE "public"."organization" (
 
 CREATE TABLE "public"."member" (
                              "id" varchar,
-                             "login" varchar(255),
-                             "avatar_url" varchar(255),
-                             "followers_url" varchar(255),
-                             "following_url" varchar(255),
-                             "followers" bigint,
-                             "following" bigint,
+                             "login" varchar(255) NOT NULL,
+                             "avatar_url" varchar(255) NOT NULL,
+                             "followers_url" varchar(255) NOT NULL,
+                             "following_url" varchar(255) NOT NULL,
+                             "organization_id" varchar(50) NOT NULL,
+                             "followers" bigint NOT NULL,
+                             "following" bigint NOT NULL,
                              "created_at" timestamp,
                              "updated_at" timestamp,
                              PRIMARY KEY ("id")

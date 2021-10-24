@@ -39,12 +39,32 @@ class Member extends Model {
                 allowNull: false,
                 type: DataTypes.BIGINT,
                 field: 'following'
+            },
+            organizationId: {
+                allowNull: false,
+                type: DataTypes.STRING,
+                field: 'organization_id'
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: 'created_at'
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: 'updated_at'
             }
         }, {
             sequelize,
             modelName: 'member',
             tableName: 'member'
         })
+    }
+
+    static associate(models) {
+        const { Organization: OrganizationModel, Member: MemberModel} = models;
+        MemberModel.belongsTo(OrganizationModel, { foreignKey: 'organizationId' });
     }
 }
 
