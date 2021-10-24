@@ -273,5 +273,36 @@ describe('# Application Test', () => {
                 expect(body.isDeleted).toBeFalsy();
             });
         })
+
+        it('#DELETE it should delete all comments if organization is found', async () => {
+            await seedSomeComments();
+
+            const before = await request(app).get('/orgs/xendit/comments')
+                .expect(200);
+            const response = await request(app).delete('/orgs/xendit/comments')
+                .expect(204);
+            const after = await request(app).get('/orgs/xendit/comments')
+                .expect(200);
+
+            const {body:bodyBefore} = before;
+            const {body:bodyDelete} = response;
+            const {body:bodyAfter} = after;
+
+            expect(bodyBefore).not.toBeNull();
+            expect(bodyBefore).not.toBeUndefined();
+            expect(bodyBefore.length).toEqual(2);
+            expect(bodyDelete).toEqual({});
+            expect(bodyAfter).not.toBeNull();
+            expect(bodyAfter).not.toBeUndefined();
+            expect(bodyAfter.length).toEqual(0);
+        });
+
+        it('#GET it should return 404 and message Unknown Service!', async () => {
+            const response = await request(app).get('/orgs/anything').expect(404);
+
+            const {body} = response;
+
+            expect(body.message).toEqual('Unknown Service!');
+        });
     });
 });
