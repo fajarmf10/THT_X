@@ -5,27 +5,16 @@ import Comment from "../src/comment/Comment";
 import Organization from "../src/organization/Organization";
 import app from '../src/app';
 import Member from "../src/member/Member";
+import config from "../config/index";
 
 describe('# Application Test', () => {
     let databaseConnection;
-    const applicationConfig = {
-        applicationPort: 8012,
-        applicationName: 'Organizations-API',
-        db: {
-            name: 'organizations',
-            username: 'postgres',
-            password: 'halosemua',
-            host: '127.0.0.1',
-            dialect: 'postgres',
-            port: 5430
-        }
-    };
     let organizationModel;
     let commentModel;
     let memberModel;
 
     beforeAll(async () => {
-        databaseConnection = database.connect(applicationConfig.db);
+        databaseConnection = database.connect(config.db);
         await databaseConnection.sync();
         let status;
 
