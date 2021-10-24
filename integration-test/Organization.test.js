@@ -45,7 +45,7 @@ describe('# Application Test', () => {
     })
 
     afterAll(async () => {
-        await dropTables();
+        // await dropTables();
     })
 
     async function dropTables() {
@@ -240,6 +240,37 @@ describe('# Application Test', () => {
                 expect(response).not.toBeNull();
                 expect(response).not.toBeUndefined();
                 expect(body.length).toEqual(0);
+            });
+
+            it('#POST it should return 404 when organization doesn\'t exist', async () => {
+                const payload = {comment: 'Nice one!'};
+                const response = await request(app).post('/orgs/abcdef/comments')
+                    .send(payload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json')
+                    .expect(404);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.message).toEqual("Organization not found!");
+            });
+
+            it('#POST it should return 201 and posted comments when Organization is exist', async () => {
+                const payload = {comment: 'Nice one!'};
+                const response = await request(app).post('/orgs/xendit/comments')
+                    .send(payload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json')
+                    .expect(201);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.comment).toContain(payload.comment);
+                expect(body.isDeleted).toBeFalsy();
             });
         })
     });
