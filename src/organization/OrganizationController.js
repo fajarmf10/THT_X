@@ -1,6 +1,9 @@
 import express from "express";
 import errorHandler from "../middleware/errorHandler";
 import UnknownRoutes from "../exception/UnknownRoutes";
+import requestValidator from "../middleware/requestValidator";
+import postCommentValidator from "../validation/postCommentValidator";
+import organizationIdValidator from "../validation/organizationIdValidator";
 
 export default class OrganizationController {
     constructor(app) {
@@ -16,11 +19,28 @@ export default class OrganizationController {
     attachRoutes() {
         this._app.use('/orgs', this._router);
 
-        this._router.post('/:orgsId/comments', errorHandler(this._postComment));
-        this._router.get('/:orgsId/comments', errorHandler(this._getAllComments));
-        this._router.delete('/:orgsId/comments', errorHandler(this._deleteComments));
+        this._router.post(
+            '/:orgId/comments',
+            requestValidator('params', organizationIdValidator),
+            requestValidator('body', postCommentValidator),
+            errorHandler(this._postComment)
+        );
+        this._router.get(
+            '/:orgId/comments',
+            requestValidator('params', organizationIdValidator),
+            errorHandler(this._getAllComments)
+        );
+        this._router.delete(
+            '/:orgId/comments',
+            requestValidator('params', organizationIdValidator),
+            errorHandler(this._deleteComments)
+        );
 
-        this._router.get('/:orgsId/members', errorHandler(this._getAllMembers));
+        this._router.get(
+            '/:orgId/members',
+            requestValidator('params', organizationIdValidator),
+            errorHandler(this._getAllMembers)
+        );
 
         this._router.all('*', errorHandler(this._unknownRoutes));
     }
@@ -31,34 +51,34 @@ export default class OrganizationController {
 
     async _postComment(request, response) {
         const {commentService} = this._app.locals.services;
-        const {orgsId} = request.params;
+        const {orgId} = request.params;
         const {body: requestBody} = request;
-        const result = await commentService.postComment(requestBody, orgsId);
+        const result = await commentService.postComment(requestBody, orgId);
         return response.status(201).json(result);
     }
 
     async _getAllComments(request, response) {
         const {commentService} = this._app.locals.services;
-        const {orgsId} = request.params;
-        const result = await commentService.getAllCommentsForOrganization(orgsId);
+        const {orgId} = request.params;
+        const result = await commentService.getAllCommentsForOrganization(orgId);
         return response.status(200).json(result);
     }
 
     async _deleteComments(request, response) {
         const {commentService} = this._app.locals.services;
-        const {orgsId} = request.params;
-        const totalCommentsDeleted = await commentService.deleteAllCommentsForOrganization(orgsId);
+        const {orgId} = request.params;
+        const totalCommentsDeleted = await commentService.deleteAllCommentsForOrganization(orgId);
         const timestamp = new Date().toISOString()
             .replace(/T/, ' ')
             .replace(/\..+/, '');
-        console.log(`Deleted ${totalCommentsDeleted} comment(s) for ${orgsId} on ${timestamp}`);
+        console.log(`Deleted ${totalCommentsDeleted} comment(s) for ${orgId} on ${timestamp}`);
         return response.status(204).json({});
     }
 
     async _getAllMembers(request, response) {
         const { memberService } = this._app.locals.services;
-        const {orgsId} = request.params;
-        const members = await memberService.getAllMemberForOrganization(orgsId);
+        const {orgId} = request.params;
+        const members = await memberService.getAllMemberForOrganization(orgId);
         return response.status(200).json(members);
     }
 }

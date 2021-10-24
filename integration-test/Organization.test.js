@@ -380,6 +380,35 @@ describe('# Application Test', () => {
                 expect(body.length).toEqual(0);
             });
 
+            it('#GET it should return 400 Bad Request when organization is empty', async () => {
+                await seedSomeComments();
+
+                const response = await request(app)
+                    .get('/orgs/ /comments')
+                    .expect(400);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.message).toEqual('"orgId" is not allowed to be empty');
+            });
+
+
+            it('#GET it should return 404 Organization not found! because organization parameter is trimmed', async () => {
+                await seedSomeComments();
+
+                const response = await request(app)
+                    .get('/orgs/xendit org/comments')
+                    .expect(404);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.message).toEqual('Organization not found!');
+            });
+
             it('#POST it should return 404 when organization doesn\'t exist', async () => {
                 const payload = {comment: 'Nice one!'};
                 const response = await request(app).post('/orgs/abcdef/comments')
@@ -393,6 +422,36 @@ describe('# Application Test', () => {
                 expect(response).not.toBeNull();
                 expect(response).not.toBeUndefined();
                 expect(body.message).toEqual("Organization not found!");
+            });
+
+            it('#POST it should return 400 when parameter organization is empty', async () => {
+                const payload = {comment: 'Nice one!'};
+                const response = await request(app).post('/orgs/ /comments')
+                    .send(payload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json')
+                    .expect(400);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.message).toEqual('"orgId" is not allowed to be empty');
+            });
+
+            it('#POST it should return 400 when wrong payload being sent to the endpoint', async () => {
+                const wrongPayload = {unknownKey: 'Nice one!'};
+                const response = await request(app).post('/orgs/abcdef/comments')
+                    .send(wrongPayload)
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json')
+                    .expect(400);
+
+                const {body} = response;
+
+                expect(response).not.toBeNull();
+                expect(response).not.toBeUndefined();
+                expect(body.message).toEqual('"comment" is required');
             });
 
             it('#POST it should return 201 and posted comments when Organization is exist', async () => {
@@ -435,6 +494,30 @@ describe('# Application Test', () => {
             expect(bodyAfter.length).toEqual(0);
         });
 
+        it('#DELETE it should return 400 Bad Request when parameter organization is empty', async () => {
+            await seedSomeComments();
+
+            const before = await request(app).get('/orgs/xendit/comments')
+                .expect(200);
+            const response = await request(app).delete('/orgs/ /comments')
+                .expect(400);
+            const after = await request(app).get('/orgs/xendit/comments')
+                .expect(200);
+
+            const {body:bodyBefore} = before;
+            const {body:bodyDelete} = response;
+            const {body:bodyAfter} = after;
+
+            expect(bodyBefore).not.toBeNull();
+            expect(bodyBefore).not.toBeUndefined();
+            expect(bodyBefore.length).toEqual(2);
+            expect(bodyDelete.statusCode).toEqual(400);
+            expect(bodyDelete.message).toEqual('"orgId" is not allowed to be empty');
+            expect(bodyAfter).not.toBeNull();
+            expect(bodyAfter).not.toBeUndefined();
+            expect(bodyAfter.length).toEqual(2);
+        });
+
         it('#GET it should return 404 and message Unknown Service!', async () => {
             const response = await request(app).get('/orgs/anything').expect(404);
 
@@ -454,6 +537,17 @@ describe('# Application Test', () => {
             expect(body.length).toEqual(5);
             expect(body[0].login).toEqual('bxcodec');
             expect(body[0].followers).toEqual(583);
+        });
+
+        it('#GET it should return 400 Bad Request if parameter organization is empty', async () => {
+            const response = await request(app).get('/orgs/ /members')
+                .expect(400);
+
+            const {body} = response;
+
+            expect(body).not.toBeNull();
+            expect(body).not.toBeUndefined();
+            expect(body.message).toEqual('"orgId" is not allowed to be empty');
         });
 
         it('#GET it should return empty list of member from lestari', async () => {
