@@ -66,6 +66,17 @@ class Member extends Model {
         const { Organization: OrganizationModel, Member: MemberModel} = models;
         MemberModel.belongsTo(OrganizationModel, { foreignKey: 'organizationId' });
     }
+
+    static async getMembersOfOrganizationAndSortByHighestFollower(organization) {
+        return await Member.findAll({
+            where: {
+                organization_id: organization.id
+            },
+            order: [
+                ['followers', 'DESC']
+            ]
+        })
+    }
 }
 
 export default Member;

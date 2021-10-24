@@ -9,6 +9,7 @@ import CommentService from "./comment/CommentService";
 import OrganizationController from "./organization/OrganizationController";
 import Comment from "./comment/Comment";
 import Member from "./member/Member";
+import MemberService from "./member/MemberService";
 
 const app = express();
 app.use(cors());
@@ -24,9 +25,11 @@ const createModels = () => ({
 const createServices = models => {
     const organizationService = new OrganizationService(models);
     const commentService = new CommentService(organizationService, models);
+    const memberService = new MemberService(organizationService, models);
     return {
         organizationService,
-        commentService
+        commentService,
+        memberService
     };
 }
 
