@@ -4,6 +4,7 @@ import database from "../src/Database";
 import Comment from "../src/comment/Comment";
 import Organization from "../src/organization/Organization";
 import app from '../src/app';
+import Member from "../src/member/Member";
 
 describe('# Application Test', () => {
     let databaseConnection;
@@ -21,6 +22,7 @@ describe('# Application Test', () => {
     };
     let organizationModel;
     let commentModel;
+    let memberModel;
 
     beforeAll(async () => {
         databaseConnection = database.connect(applicationConfig.db);
@@ -38,8 +40,10 @@ describe('# Application Test', () => {
 
         organizationModel = Organization.init(databaseConnection);
         commentModel = Comment.init(databaseConnection);
-        organizationModel.associate({Organization: organizationModel, Comment: commentModel})
-        commentModel.associate({Organization: organizationModel, Comment: commentModel})
+        memberModel = Member.init(databaseConnection);
+        organizationModel.associate({Organization: organizationModel, Comment: commentModel, Member: memberModel})
+        commentModel.associate({Organization: organizationModel, Comment: commentModel, Member: memberModel})
+        memberModel.associate({Organization: organizationModel, Comment: commentModel, Member: memberModel})
 
         await initializeTables();
     })
@@ -116,6 +120,61 @@ describe('# Application Test', () => {
                 field: 'updated_at'
             }
         });
+
+        await queryInterface.createTable('member', {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                allowNull: false,
+                primaryKey: true,
+                field: 'id'
+            },
+            login: {
+                allowNull: false,
+                type: DataTypes.STRING,
+                field: 'login'
+            },
+            avatar_url:{
+                allowNull: false,
+                type: DataTypes.STRING,
+                field: 'avatar_url'
+            },
+            followers_url: {
+                allowNull: false,
+                type: DataTypes.STRING,
+                field: 'followers_url'
+            },
+            following_url: {
+                allowNull: false,
+                type: DataTypes.STRING,
+                field: 'following_url'
+            },
+            followers: {
+                allowNull: false,
+                type: DataTypes.BIGINT,
+                field: 'followers'
+            },
+            following: {
+                allowNull: false,
+                type: DataTypes.BIGINT,
+                field: 'following'
+            },
+            organizationId: {
+                allowNull: false,
+                type: DataTypes.STRING,
+                field: 'organization_id'
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: 'created_at'
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: 'updated_at'
+            }
+        });
     }
 
     async function seedSomeOrganizations() {
@@ -141,15 +200,69 @@ describe('# Application Test', () => {
         await xendit.createComment(anotherComment);
     }
 
+    async function seedSomeMembers() {
+        await memberModel.create({
+            login:'acetdecastro',
+            avatarUrl:'https://avatars.githubusercontent.com/u/13687580?v=4',
+            followersUrl:'sample',
+            followingUrl:'anothersample',
+            followers:3,
+            following:8,
+            organizationId:'xendit'
+        });
+
+        await memberModel.create({
+            login:'bxcodec',
+            avatarUrl:'https://avatars.githubusercontent.com/u/11002383?v=4',
+            followersUrl:'sample',
+            followingUrl:'anothersample',
+            followers:583,
+            following:54,
+            organizationId:'xendit'
+        });
+
+        await memberModel.create({
+            login:'mkamadeus',
+            avatarUrl:'https://avatars.githubusercontent.com/u/40513202?v=4',
+            followersUrl:'sample',
+            followingUrl:'anothersample',
+            followers:110,
+            following:143,
+            organizationId:'xendit'
+        });
+
+        await memberModel.create({
+            login:'mychaelgo',
+            avatarUrl:'https://avatars.githubusercontent.com/u/4651658?v=4',
+            followersUrl:'sample',
+            followingUrl:'anothersample',
+            followers:80,
+            following:26,
+            organizationId:'xendit'
+        });
+
+        await memberModel.create({
+            login:'wildan3105',
+            avatarUrl:'https://avatars.githubusercontent.com/u/7030099?v=4',
+            followersUrl:'sample',
+            followingUrl:'anothersample',
+            followers:23,
+            following:14,
+            organizationId:'xendit'
+        });
+    }
+
     async function truncateTables() {
         await organizationModel.destroy({truncate: true, cascade:true});
         await commentModel.destroy({truncate: true, cascade:true});
+        await memberModel.destroy({truncate: true, cascade:true});
     }
 
     describe('## Model', () => {
         beforeEach(async () => {
             await seedSomeOrganizations();
             await seedSomeComments();
+            await seedSomeMembers();
         })
         afterEach(async () => {
             await truncateTables();
@@ -191,11 +304,36 @@ describe('# Application Test', () => {
                 expect(actualResult.length).toEqual(2);
             });
         })
+
+        describe('### Member', () => {
+            it('should return list of members from xendit and order by highest follower', async () => {
+                const xenditId = {id: 'xendit'};
+
+                const actualResult = await memberModel.getMembersOfOrganizationAndSortByHighestFollower(xenditId);
+
+                expect(actualResult.length).toEqual(5);
+                expect(actualResult).not.toBeNull();
+                expect(actualResult).not.toBeUndefined();
+                expect(actualResult.length).toEqual(5);
+                expect(actualResult[0].login).toEqual('bxcodec');
+                expect(actualResult[0].followers).toEqual(583);
+            });
+
+            it('should return empty list of member for abcdef organization', async () => {
+                const org = {id: 'abcdef'}
+
+                const actualResult = await memberModel.getMembersOfOrganizationAndSortByHighestFollower(org);
+
+                expect(actualResult).toEqual([]);
+                expect(actualResult.length).toEqual(0);
+            });
+        })
     });
 
     describe('## Controller', () => {
         beforeEach(async () => {
             await seedSomeOrganizations();
+            await seedSomeMembers();
         })
         afterEach(async () => {
             await truncateTables();
@@ -303,6 +441,41 @@ describe('# Application Test', () => {
             const {body} = response;
 
             expect(body.message).toEqual('Unknown Service!');
+        });
+
+        it('#GET it should return list of members from xendit', async () => {
+            const response = await request(app).get('/orgs/xendit/members')
+                .expect(200);
+
+            const {body} = response;
+
+            expect(body).not.toBeNull();
+            expect(body).not.toBeUndefined();
+            expect(body.length).toEqual(5);
+            expect(body[0].login).toEqual('bxcodec');
+            expect(body[0].followers).toEqual(583);
+        });
+
+        it('#GET it should return empty list of member from lestari', async () => {
+            const response = await request(app).get('/orgs/lestari/members')
+                .expect(200);
+
+            const {body} = response;
+
+            expect(body).not.toBeNull();
+            expect(body).not.toBeUndefined();
+            expect(body.length).toEqual(0);
+        });
+
+        it('#GET it should return empty list of member from abcdef', async () => {
+            const response = await request(app).get('/orgs/abcdef/members')
+                .expect(404);
+
+            const {body} = response;
+
+            expect(body).not.toBeNull();
+            expect(body).not.toBeUndefined();
+            expect(body.message).toEqual("Organization not found!");
         });
     });
 });

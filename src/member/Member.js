@@ -15,17 +15,17 @@ class Member extends Model {
                 type: DataTypes.STRING,
                 field: 'login'
             },
-            avatar_url:{
+            avatarUrl:{
                 allowNull: false,
                 type: DataTypes.STRING,
                 field: 'avatar_url'
             },
-            followers_url: {
+            followersUrl: {
                 allowNull: false,
                 type: DataTypes.STRING,
                 field: 'followers_url'
             },
-            following_url: {
+            followingUrl: {
                 allowNull: false,
                 type: DataTypes.STRING,
                 field: 'following_url'

@@ -10,6 +10,7 @@ export default class OrganizationController {
         this._getAllComments = this._getAllComments.bind(this);
         this._unknownRoutes = this._unknownRoutes.bind(this);
         this._deleteComments = this._deleteComments.bind(this);
+        this._getAllMembers = this._getAllMembers.bind(this);
     }
 
     attachRoutes() {
@@ -18,6 +19,9 @@ export default class OrganizationController {
         this._router.post('/:orgsId/comments', errorHandler(this._postComment));
         this._router.get('/:orgsId/comments', errorHandler(this._getAllComments));
         this._router.delete('/:orgsId/comments', errorHandler(this._deleteComments));
+
+        this._router.get('/:orgsId/members', errorHandler(this._getAllMembers));
+
         this._router.all('*', errorHandler(this._unknownRoutes));
     }
 
@@ -49,5 +53,12 @@ export default class OrganizationController {
             .replace(/\..+/, '');
         console.log(`Deleted ${totalCommentsDeleted} comment(s) for ${orgsId} on ${timestamp}`);
         return response.status(204).json({});
+    }
+
+    async _getAllMembers(request, response) {
+        const { memberService } = this._app.locals.services;
+        const {orgsId} = request.params;
+        const members = await memberService.getAllMemberForOrganization(orgsId);
+        return response.status(200).json(members);
     }
 }
