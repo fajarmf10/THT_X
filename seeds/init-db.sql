@@ -17,3 +17,16 @@ CREATE TABLE "public"."organization" (
                                          "updated_at" timestamp,
                                          PRIMARY KEY ("id")
 );
+
+CREATE TABLE "public"."member" (
+                             "id" varchar,
+                             "login" varchar(255),
+                             "avatar_url" varchar(255),
+                             "followers_url" varchar(255),
+                             "following_url" varchar(255),
+                             "followers" bigint,
+                             "following" bigint,
+                             "created_at" timestamp,
+                             "updated_at" timestamp,
+                             PRIMARY KEY ("id")
+);

@@ -1,5 +1,4 @@
 import {DataTypes, Model} from "sequelize";
-import Organization from "../organization/Organization";
 
 class Comment extends Model {
     static init(sequelize) {

@@ -8,6 +8,7 @@ import OrganizationService from "./organization/OrganizationService";
 import CommentService from "./comment/CommentService";
 import OrganizationController from "./organization/OrganizationController";
 import Comment from "./comment/Comment";
+import Member from "./member/Member";
 
 const app = express();
 app.use(cors());
@@ -16,7 +17,8 @@ databaseConnection.sync();
 
 const createModels = () => ({
     Organization: Organization.init(databaseConnection),
-    Comment: Comment.init(databaseConnection)
+    Comment: Comment.init(databaseConnection),
+    Member: Member.init(databaseConnection)
 });
 
 const createServices = models => {
