@@ -1,7 +1,6 @@
 # Organizations-API
 
 ## Running Application
-
 To run the application, assuming that you have Docker installed, you can follow these steps:
 
 ### Create .env file
@@ -61,3 +60,40 @@ Here are the list of Organizations registered in database:
 | lestari     | Lestari      |
 
 
+## Running Test
+To run test, please follow instructions below
+
+### Create .env file
+We use the same `.env` file format, the difference is only on the `SEED_FOLDER` key,
+which for test will be pointed to directory `/seeds-test`. Here is an example:
+
+```text
+APPLICATION_PORT=8013
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=pass
+POSTGRES_HOSTNAME=localhost
+POSTGRES_PORT=5432
+SEED_FOLDER=seeds-test
+```
+
+Don't forget to save this configuration as `.env.test`
+
+### Running docker-compose
+We then run the `postgresql` container. Use these command:
+
+```shell
+docker-compose --env-file ./.env.test up --renew-anon-volumes -d postgres organizations-api
+```
+
+### Run the test
+Please make sure to check that `postgresql` container is already up and running.
+Then, you can use these command
+
+```shell
+npm run test
+```
+
+It will then generate the report too for this application.
+
+## Coverage Report
+![Coverage Report](test-report.png)
