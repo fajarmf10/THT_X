@@ -1,22 +1,43 @@
-version: '3.1'
+version: '3.7'
 
 services:
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - 54326:5432
+    environment:
+      POSTGRES_DB: organizations
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - database:/var/lib/postgres/data
+      - ./seeds/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   organizations-api:
     container_name: organizations-api
     build:
       context: .
       dockerfile: Dockerfile
+    command: bash -c 'while !</dev/tcp/postgres/5432; do sleep 1; done; npm run start'
+    environment:
+      NODE_ENV: dev
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
+      postgres:
+        condition: service_healthy
+    links:
       - postgres
     ports:
-        - "8123:8012"
-  postgres:
-    image: postgres
-    restart: always
-    ports:
-      - ${POSTGRESQL_PORT}:5432
-    environment:
-      POSTGRES_USER: ${POSTGRESQL_USERNAME}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-    volumes:
-      - ${SEED_FOLDER}:/docker-entrypoint-initdb.d
+      - "8123:8012"
+
+volumes:
+  database:
