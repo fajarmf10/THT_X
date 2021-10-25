@@ -36,6 +36,22 @@ These are the explanations for those command:
 The application will be started, and will be running on `localhost:8123`. We can also access the PostgreSql database on
 `localhost:54326`
 
+If you got an error while running the command above, you can try to comment the depends_on from `docker-compose.yml` file,
+then run it from the `postgres` first while waiting until `postgres` container is ready to accept the connection,
+and then runs the `organizations-api` container.
+
+Here is the sequence:
+
+```shell
+docker-compose --env-file ./.env.dev up --renew-anon-volumes -d postgres
+```
+
+Then:
+
+```shell
+docker-compose --env-file ./.env.dev up --renew-anon-volumes -d organizations-api
+```
+
 ### Routes
 Here are the list of the routes:
 ```text
