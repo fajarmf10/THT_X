@@ -37,7 +37,7 @@ The application will be started, and will be running on `localhost:8123`. We can
 `localhost:54326`
 
 ### Routes
-Here is the list of the routes:
+Here are the list of the routes:
 ```text
 GET /orgs/{orgId}/comments => Gets all comments posted on specific organization
 POST /orgs/{orgId}/comments => Post / publish comment on specific organization
@@ -82,7 +82,7 @@ Don't forget to save this configuration as `.env.test`
 We then run the `postgresql` container. Use these command:
 
 ```shell
-docker-compose --env-file ./.env.test up --renew-anon-volumes -d postgres organizations-api
+docker-compose --env-file ./.env.test up --renew-anon-volumes -d postgres
 ```
 
 ### Run the test
