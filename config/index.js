@@ -9,10 +9,10 @@ export default {
     applicationName: 'Organizations-API',
     db: {
         name: 'organizations',
-        username: process.env.POSTGRESQL_USERNAME,
-        password: process.env.POSTGRESQL_PASSWORD,
-        host: process.env.POSTGRESQL_HOSTNAME,
+        username: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+        host: process.env.POSTGRES_HOST,
         dialect: 'postgres',
-        port: process.env.POSTGRESQL_PORT
+        port: process.env.POSTGRES_PORT
     }
 };
