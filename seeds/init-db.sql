@@ -1,5 +1,3 @@
-CREATE DATABASE organizations;
-
 CREATE TABLE "public"."comment" (
                                     "id" varchar(50) NOT NULL,
                                     "comment" text NOT NULL,
